@@ -1,3 +1,4 @@
+#Importing needed libraries
 import pygame
 from abc import ABC, abstractmethod
 import math
@@ -80,10 +81,8 @@ class Enemy:
         #move based on what was calculated
         self.pos.x += x_move
         self.pos.y += y_move
-    def dist_calc_end(self):
-        pass
     def dist_calc_waypoint(self,waypoint):
-        pass
+        dist = math.sqrt(((self.x-waypoint.x)**2) + ((self.y - waypoint.y)**2))
 
 class Projectile(ABC):
     speed:int
