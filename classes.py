@@ -209,6 +209,15 @@ class Tower(ABC,sprite.Sprite):
     @abstractmethod
     def fire():
         pass
-    def find_target():
-        pass
+    def find_target(self):
+        for i in enemies:
+            if i.pos == self.pos:
+                return i
+        return None
 
+
+class Beellista(Tower):
+    def __init__(self, pos=Pos(x=0, y=0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources\Temporary.png")):
+        super().__init__(pos, scale, fire_rate, range, img)
+    def fire():
+        pass
