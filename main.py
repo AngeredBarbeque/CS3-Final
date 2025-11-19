@@ -7,7 +7,8 @@ pygame.display.set_icon(pygame.image.load("Resources/Temporary.png"))
 
 background = pygame.image.load("Resources\\background.jpg")
 
-waypoints = [Pos(310,325),Pos(310,290),Pos(360,290)]
+waypoints = [(620,325),(620,160),(750,160)]
+
 
 lives = 20
 wave = 1
@@ -23,25 +24,30 @@ while running:
     if wave <= 5 and not done:
         to_spawn = wave*5
         for i in range(to_spawn):
-            enemies.add(Enemy(Pos(0,325),100,0.5,1))
+            enemies.add(Enemy((0,325),100,0.5,1))
         done = True
         wave += 1
     elif wave > 5 and wave < 11 and not done:
         to_spawn = (wave-5) * 5
         for i in range(to_spawn):
-            enemies.add(Enemy(Pos(0,0),300,20,1))
+            enemies.add(Enemy((0,325),300,0.5,1))
         done = True
         wave += 1
     elif not done:
-        enemies.add(Enemy(Pos(0,0),5000,15,1))
+        enemies.add(Enemy((0,325),5000,0.5,1))
         done = True
         wave += 1
 
     for i in enemies:
+        print(i.rect.y)
         i.update(waypoints[i.next_waypoint_idx])
-        if i.at_waypoint(waypoints[i.next_waypoint_idx], 2):
+        if i.at_waypoint(waypoints[i.next_waypoint_idx]):
+            print("there")
             if i.next_waypoint_idx > len(waypoints) - 1:
+                print("killing")
                 i.kill()
                 lives -= 1
+    for i in waypoints:
+        screen.blit(pygame.image.load("Resources\\Temporary.png"),(i[0],i[1]))
     enemies.draw(screen)
     pygame.display.flip()

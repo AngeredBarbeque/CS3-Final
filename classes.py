@@ -37,38 +37,28 @@ class Button:
         screen.blit(self.img, (self.x, self.y))
         return action
 
-class Pos:
-    x: int
-    y: int
-    def __init__(self, x=0, y=0):
-        self.x = x
-        self.y = y
-    def compare(self,other):
-        dist = math.sqrt(((self.x-other.x)**2) + ((self.y - other.y)**2))
-        return dist
-
 class Enemy(sprite.Sprite):
     x:float
     y:float
     health:int
     speed:float
     scale:float 
-    def __init__(self, pos=Pos(0,0), health=100, speed=1, scale=1, img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self, pos=(0,0), health=100, speed=1, scale=1, img=pygame.image.load("Resources/Temporary.png")):
         pygame.sprite.Sprite.__init__(self)
         self.next_waypoint_idx = 0
-        self.pos = pos
         self.health = health
         self.speed = speed
         self.scale = scale
         self.image = pygame.transform.scale(img,(int(img.get_width()*scale),int(img.get_height()*scale)))
         self.rect = self.image.get_rect()
-        self.rect.x = self.pos.x
-        self.rect.y = self.pos.y
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+        
     def update(self,target):
         #Finds the difference between position of self, and position of target
         #This is representative of if self is above,below,left of, or right of the target.
-        difference_x = self.pos.x - target.x
-        difference_y = self.pos.y - target.y
+        difference_x = self.rect.x - target[0]
+        difference_y = self.rect.y - target[1]
         #If the difference is negative, target is right of self, meaning self needs positive movement
         if difference_x < 0:
             x_move = self.speed
@@ -86,21 +76,15 @@ class Enemy(sprite.Sprite):
         elif difference_y > 0:
             y_move = self.speed * -1
         #move based on what was calculated
-        self.pos.x += x_move
-        self.pos.y += y_move
         self.rect.x += x_move
-        self.rect.y += y_move
+        print(f"{self.rect.y} + {y_move} == {self.rect.y + y_move}")
+        self.rect.y = self.rect.y + y_move
+        print(self.rect.y)
 
-    def at_waypoint(self, waypoint,tolerance):
-        dist = self.pos.compare(waypoint)
-        #If the objects are a given amount of pixels or less apart, snap self to the position of other.
-        if dist <= tolerance:
-            self.pos.x = waypoint.x
-            self.pos.y = waypoint.y
-            self.rect.x = waypoint.x
-            self.rect.y = waypoint.y
+    def at_waypoint(self, waypoint):
+        dist = math.sqrt(((waypoint[0]-self.rect.x)**2) + ((waypoint[1] - self.rect.y)**2))
+        if dist == 0:
             self.next_waypoint_idx += 1
-            print('true')
             return True
         else:
             return False
@@ -111,21 +95,19 @@ class Projectile(ABC,sprite.Sprite):
     x:float
     y:float
     scale:float
-    def __init__(self,speed=1,damage=15,pos=Pos(x=0,y=0),scale=1,img=pygame.image.load("Resources/Temporary.png"),target=Pos(0,0)):
+    def __init__(self,speed=1,damage=15,pos=(0,0),scale=1,img=pygame.image.load("Resources/Temporary.png"),target=(0,0)):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.damage = damage
-        self.pos = pos
         self.scale = scale
         self.image = pygame.transform.scale(img,(int(img.get_width()*scale),int(img.get_height()*scale)))
         self.target = target
-        self.rect = self.img.get_rect()
         self.rect = self.image.get_rect()
     def move(self, target):
         #Finds the difference between position of self, and position of target
         #This is representative of if self is above,below,left of, or right of the target.
-        difference_x = self.pos.x - target.pos.x
-        difference_y = self.pos.y - target.pos.y
+        difference_x = self.rect.x - target[0]
+        difference_y = self.rect.y - target[1]
         #If the difference is negative, target is right of self, meaning self needs positive movement
         if difference_x < 0:
             x_move = self.speed
@@ -143,8 +125,8 @@ class Projectile(ABC,sprite.Sprite):
         elif difference_y > 0:
             y_move = self.speed * -1
         #move based on what was calculated
-        self.pos.x += x_move
-        self.pos.y += y_move
+        self.rect.x += x_move
+        self.rect.y += y_move
     def has_hit(self):
         for i in enemies:
             if sprite.collide_rect(self,i):
@@ -155,7 +137,7 @@ class Projectile(ABC,sprite.Sprite):
         pass
 
 class Bee(Projectile):
-    def __init__(self, speed=1, damage=15, pos=Pos(x=0, y=0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Pos(0, 0)):
+    def __init__(self, speed=1, damage=15, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0)):
         super().__init__(speed, damage, pos, scale, img, target)
     def on_hit(self,enemy):
         enemy.hp -= self.damage
@@ -166,12 +148,12 @@ class Bee(Projectile):
             if dist < closest:
                 closest = i
         if closest:
-            return closest.pos
+            return (closest[0],closest[1])
         else:
-            return self.pos
+            return (self.rect.x,self.rect.y)
         
 class Bolt(Projectile):
-    def __init__(self, speed=1, damage=15, pos=Pos(x=0, y=0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Pos(0, 0)):
+    def __init__(self, speed=1, damage=15, pos=(0,0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0)):
         super().__init__(speed, damage, pos, scale, img, target)
     def on_hit(self,enemy):
         enemy.hp -= self.damage
@@ -186,11 +168,11 @@ class Bolt(Projectile):
                         if new_y >=0 and new_y <= 1200:
                             break
                     break
-            Bee(30,15,Pos(new_x,new_y))
+            Bee(30,15,(new_x,new_y))
         self.kill()
     
 class Honey(Projectile):
-    def __init__(self, speed=1, damage=0, pos=Pos(x=0, y=0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Pos(0, 0),speed_low=10):
+    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Enemy(),speed_low=10):
         super().__init__(speed, damage, pos, scale, img, target)
         self.speed_low = speed_low
     def on_hit(self,target):
@@ -204,7 +186,7 @@ class Tower(ABC,sprite.Sprite):
     scale:float
     fire_rate:float
     range:float
-    def __init__(self,pos=Pos(x=0,y=0),scale=1,fire_rate=2,range=500,img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self,pos=(0,0),scale=1,fire_rate=2,range=500,img=pygame.image.load("Resources/Temporary.png")):
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.scale = scale
@@ -217,13 +199,13 @@ class Tower(ABC,sprite.Sprite):
         pass
     def find_target(self):
         for i in enemies:
-            if self.pos.compare(i.pos) <= self.range:
+            if math.sqrt(((i.x-self.rect.x)**2) + ((i.y - self.rect.y)**2)) <= self.range:
                 return i
         return None
 
 
 class Beellista(Tower):
-    def __init__(self, pos=Pos(x=0, y=0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
     def fire(self,target):
         shot = Bolt(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
@@ -232,7 +214,7 @@ class Beellista(Tower):
         return
     
 class Beehive(Tower):
-    def __init__(self, pos=Pos(x=0, y=0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
     def fire(self,target):
         shot = Bee(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
@@ -241,7 +223,7 @@ class Beehive(Tower):
         return
     
 class Honeycannon(Tower):
-    def __init__(self, pos=Pos(x=0, y=0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self, pos=(0,0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
     def fire(self,target):
         shot = Honey(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
