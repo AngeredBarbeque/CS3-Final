@@ -77,9 +77,7 @@ class Enemy(sprite.Sprite):
             y_move = self.speed * -1
         #move based on what was calculated
         self.rect.x += x_move
-        print(f"{self.rect.y} + {y_move} == {self.rect.y + y_move}")
-        self.rect.y = self.rect.y + y_move
-        print(self.rect.y)
+        self.rect.y += y_move
 
     def at_waypoint(self, waypoint):
         dist = math.sqrt(((waypoint[0]-self.rect.x)**2) + ((waypoint[1] - self.rect.y)**2))
