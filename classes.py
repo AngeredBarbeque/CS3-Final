@@ -14,14 +14,14 @@ class Button:
     x: int
     y: int
     scale: float
-    def __init__(self,x,y,img,scale):
-        self.x = x
-        self.y = y
+    def __init__(self,pos,img,scale):
+        self.x = pos[0]
+        self.y = pos[1]
         self.img = pygame.image.load(img)
         self.img = pygame.transform.scale(self.img, (int(self.img.get_width()*scale),int(self.img.get_height()*scale)))
         self.rect = self.img.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
         self.clicked = False
     def draw(self,screen):
         pos = pygame.mouse.get_pos()
@@ -31,7 +31,7 @@ class Button:
             #if the mouse is clicked and the button hasn't already been clicked, return action as true
             if pygame.mouse.get_pressed()[0]==1 and self.clicked == False:
                 self.clicked = False
-                action = False
+                action = True
             else:
                 action = False
         screen.blit(self.img, (self.x, self.y))
@@ -79,9 +79,11 @@ class Enemy(sprite.Sprite):
         self.rect.x += x_move
         self.rect.y += y_move
 
-    def at_waypoint(self, waypoint):
+    def at_waypoint(self, waypoint,tolerance):
         dist = math.sqrt(((waypoint[0]-self.rect.x)**2) + ((waypoint[1] - self.rect.y)**2))
-        if dist == 0:
+        if dist <= tolerance:
+            self.rect.x = waypoint[0]
+            self.rect.y = waypoint[1]
             self.next_waypoint_idx += 1
             return True
         else:
@@ -195,9 +197,9 @@ class Tower(ABC,sprite.Sprite):
     @abstractmethod
     def fire():
         pass
-    def find_target(self):
+    def __find_target(self):
         for i in enemies:
-            if math.sqrt(((i.x-self.rect.x)**2) + ((i.y - self.rect.y)**2)) <= self.range:
+            if math.sqrt(((i.rect.x-self.rect.x)**2) + ((i.rect.y - self.rect.y)**2)) <= self.range:
                 return i
         return None
 
@@ -205,27 +207,33 @@ class Tower(ABC,sprite.Sprite):
 class Beellista(Tower):
     def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
-    def fire(self,target):
-        shot = Bolt(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
-        projectiles.add(shot)
-        time.sleep(self.fire_rate)
-        return
+    def fire(self):
+        target = self.__find_target()
+        if target:
+            shot = Bolt(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            projectiles.add(shot)
+            time.sleep(self.fire_rate)
+            return
     
 class Beehive(Tower):
     def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
     def fire(self,target):
-        shot = Bee(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
-        projectiles.add(shot)
-        time.sleep(self.fire_rate)
-        return
+        target = self.__find_target()
+        if target:
+            shot = Bee(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            projectiles.add(shot)
+            time.sleep(self.fire_rate)
+            return
     
 class Honeycannon(Tower):
     def __init__(self, pos=(0,0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
     def fire(self,target):
-        shot = Honey(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
-        projectiles.add(shot)
-        time.sleep(self.fire_rate)
-        return
+        target = self.__find_target()
+        if target:
+            shot = Honey(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            projectiles.add(shot)
+            time.sleep(self.fire_rate)
+            return
         
