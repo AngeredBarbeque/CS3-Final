@@ -7,6 +7,7 @@ pygame.display.set_icon(pygame.image.load("Resources/Temporary.png"))
 
 background = pygame.image.load("Resources\\background.jpg")
 
+selectedtext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",32)
 wavetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
@@ -70,11 +71,12 @@ while running:
             else:
                 selected = "Honeycannon"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
+    selected_display = selectedtext.render(selected,True,(0,0,0))
     enemies.draw(screen)
     screen.blit(pygame.image.load("Resources\\sign.png"),(880,1075))
     screen.blit(wave_display, (1300,1100))
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
     screen.blit(beehive_icon.img, (beehive_icon.x, beehive_icon.y))
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
-    print(selected)
+    screen.blit(selected_display,pygame.mouse.get_pos())
     pygame.display.flip()
