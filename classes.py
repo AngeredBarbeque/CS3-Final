@@ -7,6 +7,7 @@ import random
 import time
 
 tolerance = 32
+towers = sprite.Group()
 projectiles = sprite.Group()
 enemies = sprite.Group()
 
@@ -23,6 +24,7 @@ class Button:
         self.rect.x = pos[0]
         self.rect.y = pos[1]
         self.clicked = False
+        #Allows for a delay
         self.start_time = 0
     def draw(self,screen):
         pos = pygame.mouse.get_pos()
@@ -33,6 +35,7 @@ class Button:
             if pygame.mouse.get_pressed()[0]==1 and self.clicked == False:
                 self.clicked = False
                 action = True
+                #Starts a timer since the last press
                 self.start_time = time.time()
             else:
                 action = False
@@ -195,6 +198,8 @@ class Tower(ABC,sprite.Sprite):
         self.range = range
         self.image = pygame.transform.scale(img,(int(img.get_width()*scale),int(img.get_height()*scale)))
         self.rect = self.image.get_rect()
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
     @abstractmethod
     def fire():
         pass
