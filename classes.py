@@ -23,6 +23,7 @@ class Button:
         self.rect.x = pos[0]
         self.rect.y = pos[1]
         self.clicked = False
+        self.start_time = 0
     def draw(self,screen):
         pos = pygame.mouse.get_pos()
         action = False
@@ -32,9 +33,9 @@ class Button:
             if pygame.mouse.get_pressed()[0]==1 and self.clicked == False:
                 self.clicked = False
                 action = True
+                self.start_time = time.time()
             else:
                 action = False
-        screen.blit(self.img, (self.x, self.y))
         return action
 
 class Enemy(sprite.Sprite):
