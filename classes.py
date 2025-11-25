@@ -103,6 +103,7 @@ class Projectile(ABC,sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
         self.damage = damage
+        self.pos = pos
         self.scale = scale
         self.image = pygame.transform.scale(img,(int(img.get_width()*scale),int(img.get_height()*scale)))
         self.target = target
@@ -124,7 +125,7 @@ class Projectile(ABC,sprite.Sprite):
         #Y logic is identical to x logic
         if difference_y < 0:
             y_move = self.speed
-        elif difference_x == 0:
+        elif difference_y == 0:
             y_move = 0
         elif difference_y > 0:
             y_move = self.speed * -1
@@ -141,27 +142,32 @@ class Projectile(ABC,sprite.Sprite):
         pass
 
 class Bee(Projectile):
-    def __init__(self, speed=1, damage=15, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0)):
+    def __init__(self, speed=1, damage=15, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0),type="Bee"):
         super().__init__(speed, damage, pos, scale, img, target)
+        self.type = type
     def on_hit(self,enemy):
         enemy.hp -= self.damage
         self.kill()
     def find_target(self,waypoints):
+        closest_dist = 10000000
         for i in enemies:
-            dist = i.pos.compare(waypoints[len(waypoints)-1], tolerance, waypoints)
-            if dist < closest:
+            #Checks for which enemy is the closest to the final waypoint
+            dist = math.sqrt(((i.rect.x-waypoints[len(waypoints)-1][0])**2) + ((i.rect.y - waypoints[len(waypoints)-1][1])**2))
+            if dist < closest_dist:
                 closest = i
-        if closest:
-            return (closest[0],closest[1])
+                closest_dist = dist
+        if closest_dist != 10000000:
+            return (closest.rect.x,closest.rect.y)
         else:
             return (self.rect.x,self.rect.y)
         
 class Bolt(Projectile):
-    def __init__(self, speed=1, damage=15, pos=(0,0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0)):
+    def __init__(self, speed=1, damage=15, pos=(0,0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=(0, 0),type="Bolt"):
         super().__init__(speed, damage, pos, scale, img, target)
+        self.type = type
     def on_hit(self,enemy):
         enemy.hp -= self.damage
-        #Creates 5 to 10 bees tha spawn in a small area around the impact
+        #Creates 5 to 10 bees thay spawn in a small area around the impact
         bees = random.randint(5,10)
         for i in range(bees):
             while True:
@@ -176,8 +182,9 @@ class Bolt(Projectile):
         self.kill()
     
 class Honey(Projectile):
-    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Enemy(),speed_low=10):
+    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources/Temporary.png"), target=Enemy(),speed_low=10,type="Honey"):
         super().__init__(speed, damage, pos, scale, img, target)
+        self.type = type
         self.speed_low = speed_low
     def on_hit(self,target):
         target.speed -= self.speed_low
@@ -203,43 +210,46 @@ class Tower(ABC,sprite.Sprite):
     @abstractmethod
     def fire():
         pass
-    def __find_target(self):
+    def _find_target(self):
         for i in enemies:
             if math.sqrt(((i.rect.x-self.rect.x)**2) + ((i.rect.y - self.rect.y)**2)) <= self.range:
-                return i
+                return (i.rect.x,i.rect.y)
         return None
 
 
 class Beellista(Tower):
     def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
+        self.last_shot = 0
     def fire(self):
-        target = self.__find_target()
+        target = super()._find_target()
         if target:
-            shot = Bolt(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
             projectiles.add(shot)
-            time.sleep(self.fire_rate)
+            self.last_shot = time.time()
             return
     
 class Beehive(Tower):
     def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
-    def fire(self,target):
-        target = self.__find_target()
+        self.last_shot = 0
+    def fire(self):
+        target = super()._find_target()
         if target:
-            shot = Bee(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            shot = Bee(3,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
             projectiles.add(shot)
-            time.sleep(self.fire_rate)
+            self.last_shot = time.time()
             return
     
 class Honeycannon(Tower):
     def __init__(self, pos=(0,0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources/Temporary.png")):
         super().__init__(pos, scale, fire_rate, range, img)
-    def fire(self,target):
-        target = self.__find_target()
+        self.last_shot = 0
+    def fire(self):
+        target = super()._find_target()
         if target:
-            shot = Honey(30,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
+            shot = Honey(3,15,self.pos,1,pygame.image.load("Resources/Temporary.png"),target)
             projectiles.add(shot)
-            time.sleep(self.fire_rate)
+            self.last_shot = time.time()
             return
         

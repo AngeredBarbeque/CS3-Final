@@ -9,6 +9,8 @@ background = pygame.image.load("Resources\\background.jpg")
 
 selectedtext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",14)
 wavetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
+honeytext = pygame.font.Font("Resources\/Times New Roman Regular.ttf",32)
+
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
 beellista_icon = Button((1267,365),"Resources/Temporary.png",1)
@@ -62,6 +64,13 @@ while running:
                 lives -= 1
         if i.health <= 0:
             i.kill()
+    for i in towers:
+        if  time.time() - i.last_shot > i.fire_rate:
+            i.fire()
+    for i in projectiles:
+        if i.type == "Bee":
+            i.target = i.find_target(waypoints)
+        i.move(i.target)
     
     #Ensures that the button wasn't pressed too recently.
     if time.time() - beellista_icon.start_time > 0.25:
