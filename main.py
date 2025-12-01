@@ -9,12 +9,12 @@ background = pygame.image.load("Resources\\background.jpg")
 
 selectedtext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",14)
 wavetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
-honeytext = pygame.font.Font("Resources\/Times New Roman Regular.ttf",32)
+honeytext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
 beellista_icon = Button((1267,365),"Resources/Temporary.png",1)
-beehive_icon = Button((1387,365),"Resources/Temporary.png",1)
+beehive_icon = Button((1387,365),"Resources//Hive.png",1)
 honeycannon_icon = Button((1507,365),"Resources/Temporary.png",1)
 
 
@@ -93,6 +93,7 @@ while running:
                 selected = "Honeycannon"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
     selected_display = selectedtext.render(selected,True,(0,0,0))
+    honey_display = honeytext.render(f"Honey: {honey_supply}",True,(0,0,0))
     enemies.draw(screen)
     towers.draw(screen)
     projectiles.draw(screen)
@@ -101,5 +102,6 @@ while running:
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
     screen.blit(beehive_icon.img, (beehive_icon.x, beehive_icon.y))
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
+    screen.blit(honey_display,(1300,440))
     screen.blit(selected_display,(mouse_pos[0]+10,mouse_pos[1]-5))
     pygame.display.flip()
