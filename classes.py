@@ -57,6 +57,8 @@ class Enemy(sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
+        self.x_move = 0
+        self.y_move = 0
         
     def update(self,target):
         #Finds the difference between position of self, and position of target
@@ -65,23 +67,23 @@ class Enemy(sprite.Sprite):
         difference_y = self.rect.y - target[1]
         #If the difference is negative, target is right of self, meaning self needs positive movement
         if difference_x < 0:
-            x_move = self.speed
+            self.x_move = self.speed
         #if the difference is 0, they are at the same x
         elif difference_x == 0:
-            x_move = 0
+            self.x_move = 0
         #if the difference is positive, target is left of self, meaning self needs negative movement
         elif difference_x > 0:
-            x_move = self.speed * -1
+            self.x_move = self.speed * -1
         #Y logic is identical to x logic
         if difference_y < 0:
-            y_move = self.speed
+            self.y_move = self.speed
         elif difference_y == 0:
-            y_move = 0
+            self.y_move = 0
         elif difference_y > 0:
-            y_move = self.speed * -1
+            self.y_move = self.speed * -1
         #move based on what was calculated
-        self.rect.x += x_move
-        self.rect.y += y_move
+        self.rect.x += self.x_move
+        self.rect.y += self.y_move
 
     def at_waypoint(self, waypoint,tolerance):
         dist = math.sqrt(((waypoint[0]-self.rect.x)**2) + ((waypoint[1] - self.rect.y)**2))
@@ -233,7 +235,9 @@ class Beellista(Tower):
         self.last_shot = 0
     def fire(self):
         target = super()._find_target()
+        #Fix targetting!
         if target:
+            #Use enemies self.x_move and self.y_move to add/subtract from the target location.
             shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),target)
             projectiles.add(shot)
             self.last_shot = time.time()
