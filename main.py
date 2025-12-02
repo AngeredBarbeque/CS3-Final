@@ -18,6 +18,20 @@ beehive_icon = Button((1387,365),"Resources//Hive.png",1)
 honeycannon_icon = Button((1507,365),"Resources/Temporary.png",1)
 
 
+#Defines collision rectangles for the track segments
+track_1 = pygame.Rect(0,285,740,130)
+track_2 = pygame.Rect(565,105,160,215)
+track_3 = pygame.Rect(580,105,400,140)
+track_4 = pygame.Rect(860,105,120,605)
+track_5 = pygame.Rect(350,575,630,130)
+track_6 = pygame.Rect(350,575,110,420)
+track_7 = pygame.Rect(350,860,710,115)
+track_8 = pygame.Rect(930,860,110,340)
+
+#Creates a list of said collision rectangles
+track_collision = [track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8]
+
+
 selected = ""
 lives = 20
 wave = 0
@@ -36,12 +50,22 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN and mouse_pos[0] < 1200:
             if not selected:
                 pass
-            elif selected == "Beellista":
-                towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
-            elif selected == "Beehive":
-                towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,500))
-            elif selected == "Honeycannon":
-                towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
+            else:
+                on_track = False
+                for i in track_collision:
+                    if pygame.Rect.collidepoint(i,mouse_pos[0],mouse_pos[1]):
+                        on_track = True
+                    else:
+                        for i in towers:
+                            if pygame.Rect.collidepoint(i.rect,mouse_pos[0],mouse_pos[1]):
+                                on_track = True
+                if selected == "Beellista" and not on_track:
+                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
+                elif selected == "Beehive" and not on_track:
+                    towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,5))
+                elif selected == "Honeycannon" and not on_track:
+                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
+    
     if wave <= 5 and not done:
         to_spawn = wave*5
         for i in range(to_spawn):

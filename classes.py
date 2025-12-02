@@ -240,7 +240,7 @@ class Beellista(Tower):
             return
     
 class Beehive(Tower):
-    def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources//Hive.png")):
+    def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=5, img=pygame.image.load("Resources//Hive.png")):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
     def fire(self):
