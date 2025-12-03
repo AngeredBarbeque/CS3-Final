@@ -10,6 +10,7 @@ background = pygame.image.load("Resources\\background.jpg")
 selectedtext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",14)
 wavetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 honeytext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
+flavortext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",20)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
@@ -31,7 +32,7 @@ track_8 = pygame.Rect(930,860,110,340)
 #Creates a list of said collision rectangles
 track_collision = [track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8]
 
-
+flavor_text = ""
 selected = ""
 lives = 20
 wave = 0
@@ -60,11 +61,11 @@ while running:
                             if pygame.Rect.collidepoint(i.rect,mouse_pos[0],mouse_pos[1]):
                                 on_track = True
                 if selected == "Beellista" and not on_track:
-                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
+                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,300))
                 elif selected == "Beehive" and not on_track:
-                    towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,5))
+                    towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,300))
                 elif selected == "Honeycannon" and not on_track:
-                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,500))
+                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,300))
     
     if wave <= 5 and not done:
         to_spawn = wave*5
@@ -95,6 +96,7 @@ while running:
         if i.type == "Bee":
             i.target = i.find_target(waypoints)
         i.move(i.target)
+        i.has_hit()
     
     #Ensures that the button wasn't pressed too recently.
     if time.time() - beellista_icon.start_time > 0.25:
@@ -115,9 +117,19 @@ while running:
                 selected = ""
             else:
                 selected = "Honeycannon"
+
+    if selected == "":
+        mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
+        if pygame.Rect.colliderect(mouse_rect,beellista_icon):
+            flavor_text = "The Beellista\n[FLAVOR TEXT HERE]"
+        elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
+            flavor_text = "The Beehive\n[FLAVOR TEXT HERE]"
+        elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
+            flavor_text = "The Honeycannon\n[FLAVOR TEXT HERE]"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
     selected_display = selectedtext.render(selected,True,(0,0,0))
     honey_display = honeytext.render(f"Honey: {honey_supply}",True,(0,0,0))
+    flavor_display = flavortext.render(flavor_text,True,(0,0,0))
     enemies.draw(screen)
     towers.draw(screen)
     projectiles.draw(screen)

@@ -24,6 +24,7 @@ class Button:
         self.rect.x = pos[0]
         self.rect.y = pos[1]
         self.clicked = False
+        self.rect = self.img.get_rect()
         #Allows for a delay
         self.start_time = 0
     def draw(self,screen):
@@ -142,6 +143,7 @@ class Projectile(ABC,sprite.Sprite):
         elif difference_y > 0:
             y_move = self.speed * -1
         #move based on what was calculated
+
         self.rect.x += x_move
         self.rect.y += y_move
     def has_hit(self):
@@ -158,7 +160,7 @@ class Bee(Projectile):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
     def on_hit(self,enemy):
-        enemy.hp -= self.damage
+        enemy.health -= self.damage
         self.kill()
     def find_target(self,waypoints):
         closest_dist = 10000000
@@ -178,15 +180,15 @@ class Bolt(Projectile):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
     def on_hit(self,enemy):
-        enemy.hp -= self.damage
-        #Creates 5 to 10 bees thay spawn in a small area around the impact
-        bees = random.randint(5,10)
+        enemy.health -= self.damage
+        #Creates 3 to 7 bees that spawn in a small area around the impact
+        bees = random.randint(3,7)
         for i in range(bees):
             while True:
-                new_x = self.x + random.randint(-20,20)
+                new_x = self.rect.x + random.randint(-50,50)
                 if new_x >= 0 and new_x <= 1600:
                     while True:
-                        new_y = self.y + random.randint(-20,20)
+                        new_y = self.rect.y + random.randint(-50,50)
                         if new_y >=0 and new_y <= 1200:
                             break
                     break
@@ -194,12 +196,14 @@ class Bolt(Projectile):
         self.kill()
     
 class Honey(Projectile):
-    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=Enemy(),speed_low=10,type="Honey"):
+    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=Enemy(),speed_low=0.2,type="Honey"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
         self.speed_low = speed_low
     def on_hit(self,target):
         target.speed -= self.speed_low
+        if target.speed <= 0:
+            target.speed = 0.01
         self.kill()
         
 
@@ -225,7 +229,7 @@ class Tower(ABC,sprite.Sprite):
     def _find_target(self):
         for i in enemies:
             if math.sqrt(((i.rect.x-self.rect.x)**2) + ((i.rect.y - self.rect.y)**2)) <= self.range:
-                return (i.rect.x,i.rect.y)
+                return i
         return None
 
 
@@ -238,7 +242,7 @@ class Beellista(Tower):
         #Fix targetting!
         if target:
             #Use enemies self.x_move and self.y_move to add/subtract from the target location.
-            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),target)
+            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
@@ -262,7 +266,7 @@ class Honeycannon(Tower):
     def fire(self):
         target = super()._find_target()
         if target:
-            shot = Honey(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),target)
+            shot = Honey(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
