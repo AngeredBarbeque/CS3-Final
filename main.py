@@ -32,6 +32,8 @@ track_8 = pygame.Rect(930,860,110,340)
 #Creates a list of said collision rectangles
 track_collision = [track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8]
 
+to_spawn = 0
+last_spawn = 0
 flavor_text = ""
 selected = ""
 lives = 20
@@ -39,6 +41,7 @@ wave = 0
 honey_supply = 0
 running = True
 while running:
+    flavor_text = ""
     mouse_pos = pygame.mouse.get_pos()
     if enemies.sprites() == [] and wave <= 11:
         done = False
@@ -61,24 +64,30 @@ while running:
                             if pygame.Rect.collidepoint(i.rect,mouse_pos[0],mouse_pos[1]):
                                 on_track = True
                 if selected == "Beellista" and not on_track:
-                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,300))
+                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,600))
                 elif selected == "Beehive" and not on_track:
-                    towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,300))
+                    towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,600))
                 elif selected == "Honeycannon" and not on_track:
-                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,300))
+                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1,2,600))
     
     if wave <= 5 and not done:
-        to_spawn = wave*5
-        for i in range(to_spawn):
+        if to_spawn == 0:
+            to_spawn = wave*5
+        #If the last spawn was a least a second ago, spawn another
+        present = time.time()
+        if last_spawn - present < -1 and to_spawn > 0:
             enemies.add(Enemy((0,325),100,1,1,pygame.image.load("Resources\\walmart.png")))
-        done = True
+            to_spawn -= 1
+            last_spawn = time.time()
+        if to_spawn == 0:
+            done = True
     elif wave > 5 and wave < 11 and not done:
         to_spawn = (wave-5) * 5
         for i in range(to_spawn):
             enemies.add(Enemy((0,325),300,2,0.04,pygame.image.load("Resources\\noigelist.png")))
         done = True
     elif not done:
-        enemies.add(Enemy((0,325),5000,1,1))
+        enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png")))
         done = True
 
     for i in enemies:
@@ -100,19 +109,19 @@ while running:
     
     #Ensures that the button wasn't pressed too recently.
     if time.time() - beellista_icon.start_time > 0.25:
-        if beellista_icon.draw(screen): 
+        if beellista_icon.draw(): 
             if selected == "Beellista":
                 selected = ""
             else:
                 selected = "Beellista"
     if time.time() - beehive_icon.start_time > 0.25:
-        if beehive_icon.draw(screen): 
+        if beehive_icon.draw(): 
             if selected == "Beehive":
                 selected = ""
             else:
                 selected = "Beehive"
     if time.time() - honeycannon_icon.start_time > 0.25:
-        if honeycannon_icon.draw(screen): 
+        if honeycannon_icon.draw(): 
             if selected == "Honeycannon":
                 selected = ""
             else:
@@ -121,15 +130,14 @@ while running:
     if selected == "":
         mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
         if pygame.Rect.colliderect(mouse_rect,beellista_icon):
-            flavor_text = "The Beellista\n[FLAVOR TEXT HERE]"
+            flavor_text = "The Beellista [FLAVOR TEXT HERE]"
         elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
-            flavor_text = "The Beehive\n[FLAVOR TEXT HERE]"
+            flavor_text = "The Beehive [FLAVOR TEXT HERE]"
         elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
-            flavor_text = "The Honeycannon\n[FLAVOR TEXT HERE]"
+            flavor_text = "The Honeycannon [FLAVOR TEXT HERE]"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
     selected_display = selectedtext.render(selected,True,(0,0,0))
     honey_display = honeytext.render(f"Honey: {honey_supply}",True,(0,0,0))
-    flavor_display = flavortext.render(flavor_text,True,(0,0,0))
     enemies.draw(screen)
     towers.draw(screen)
     projectiles.draw(screen)
@@ -139,5 +147,12 @@ while running:
     screen.blit(beehive_icon.img, (beehive_icon.x, beehive_icon.y))
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
     screen.blit(honey_display,(1300,440))
+
+    #Make for loop to handle multiple lines
+    #split flavor_text into list, iterate over list
+    flavor_display = flavortext.render(flavor_text,True,(0,0,0))
+    screen.blit(flavor_display,(1250,300))
+
+
     screen.blit(selected_display,(mouse_pos[0]+10,mouse_pos[1]-5))
     pygame.display.flip()

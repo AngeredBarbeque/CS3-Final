@@ -24,10 +24,9 @@ class Button:
         self.rect.x = pos[0]
         self.rect.y = pos[1]
         self.clicked = False
-        self.rect = self.img.get_rect()
         #Allows for a delay
         self.start_time = 0
-    def draw(self,screen):
+    def draw(self):
         pos = pygame.mouse.get_pos()
         action = False
         #Checks if the mouse is over the button
@@ -66,6 +65,9 @@ class Enemy(sprite.Sprite):
         #This is representative of if self is above,below,left of, or right of the target.
         difference_x = self.rect.x - target[0]
         difference_y = self.rect.y - target[1]
+
+        #Tried to add trig, forgot pygame can't handle floats in rects :(
+
         #If the difference is negative, target is right of self, meaning self needs positive movement
         if difference_x < 0:
             self.x_move = self.speed
@@ -74,7 +76,7 @@ class Enemy(sprite.Sprite):
             self.x_move = 0
         #if the difference is positive, target is left of self, meaning self needs negative movement
         elif difference_x > 0:
-            self.x_move = self.speed * -1
+            self.x_move = self.speed* -1
         #Y logic is identical to x logic
         if difference_y < 0:
             self.y_move = self.speed
@@ -151,6 +153,11 @@ class Projectile(ABC,sprite.Sprite):
             if sprite.collide_rect(self,i):
                 self.on_hit(i)
                 return
+        x_diff = abs(self.rect.x - self.target[0])
+        y_diff = abs(self.rect.y - self.target[1])
+        if x_diff <= self.speed and y_diff <= self.speed:
+            self.kill()
+            return
     @abstractmethod
     def on_hit():
         pass
