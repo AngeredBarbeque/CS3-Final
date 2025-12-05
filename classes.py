@@ -203,7 +203,7 @@ class Bolt(Projectile):
         self.kill()
     
 class Honey(Projectile):
-    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=Enemy(),speed_low=0.2,type="Honey"):
+    def __init__(self, speed=1, damage=0, pos=(0, 0), scale=1.5, img=pygame.image.load("Resources//glob.png"), target=Enemy(),speed_low=0.2,type="Honey"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
         self.speed_low = speed_low
@@ -267,13 +267,13 @@ class Beehive(Tower):
             return
     
 class Honeycannon(Tower):
-    def __init__(self, pos=(0,0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources//Temporary.png")):
+    def __init__(self, pos=(0,0), scale=1.5, fire_rate=2, range=500, img=pygame.image.load("Resources//Honeycannon.png")):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
     def fire(self):
         target = super()._find_target()
         if target:
-            shot = Honey(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+            shot = Honey(3,15,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
