@@ -88,13 +88,27 @@ while running:
         if to_spawn == 0:
             done = True
     elif wave > 5 and wave < 11 and not done:
-        to_spawn = (wave-5) * 5
-        for i in range(to_spawn):
+        if to_spawn == 0:
+            to_spawn = (wave-5)*5
+        #If the last spawn was a least a second ago, spawn another
+        present = time.time()
+        if last_spawn - present < -1 and to_spawn > 0:
             enemies.add(Enemy((0,325),300,2,0.04,pygame.image.load("Resources\\noigelist.png")))
-        done = True
+            to_spawn -= 1
+            last_spawn = time.time()
+        if to_spawn == 0:
+            done = True
     elif not done:
-        enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png")))
-        done = True
+        if to_spawn == 0:
+            to_spawn = (wave-5)*5
+        #If the last spawn was a least a second ago, spawn another
+        present = time.time()
+        if last_spawn - present < -1 and to_spawn > 0:
+            enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png")))
+            to_spawn -= 1
+            last_spawn = time.time()
+        if to_spawn == 0:
+            done = True
 
     for i in enemies:
         i.update(waypoints[i.next_waypoint_idx])
