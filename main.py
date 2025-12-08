@@ -14,7 +14,7 @@ flavortext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",20)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
-beellista_icon = Button((1267,365),"Resources/Temporary.png",1)
+beellista_icon = Button((1267,365),"Resources/Beellista.png",1)
 beehive_icon = Button((1387,365),"Resources//Hive.png",1)
 honeycannon_icon = Button((1507,365),"Resources/Honeycannon.png",1)
 
@@ -67,7 +67,7 @@ while running:
                             if pygame.Rect.collidepoint(i.rect,mouse_pos[0],mouse_pos[1]):
                                 on_track = True
                 if selected == "Beellista" and not on_track and honey_supply >= beellista_cost:
-                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),1,2,600))
+                    towers.add(Beellista((mouse_pos[0]-32,mouse_pos[1]-32),2,2,600))
                     honey_supply -= beellista_cost
                 elif selected == "Beehive" and not on_track and honey_supply >= beehive_cost:
                     towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,600))

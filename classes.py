@@ -222,11 +222,11 @@ class Tower(ABC,sprite.Sprite):
     range:float
     def __init__(self,pos=(0,0),scale=1,fire_rate=2,range=500,img=pygame.image.load("Resources//Temporary.png")):
         pygame.sprite.Sprite.__init__(self)
-        self.pos = pos
         self.scale = scale
         self.fire_rate = fire_rate
         self.range = range
         self.image = pygame.transform.scale(img,(int(img.get_width()*scale),int(img.get_height()*scale)))
+        self.pos = pos
         self.rect = self.image.get_rect()
         self.rect.x = pos[0]
         self.rect.y = pos[1]
@@ -241,15 +241,20 @@ class Tower(ABC,sprite.Sprite):
 
 
 class Beellista(Tower):
-    def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=500, img=pygame.image.load("Resources//Temporary.png")):
+    def __init__(self, pos=(0, 0), scale=2, fire_rate=2, range=500, img=pygame.image.load("Resources//Beellista.png")):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
+        self.flipped = False
     def fire(self):
         target = super()._find_target()
-        #Fix targetting!
+        #Make the flip thing
+        if target.rect.x < self.rect.x and self.flipped == False:
+            self.image = pygame.transform.flip(self.image,True,False)
+        elif target.rect.x > self.rect.x and self.flipped:
+            self.image = pygame.transform.flip(self.image,True,False)
         if target:
             #Use enemies self.x_move and self.y_move to add/subtract from the target location.
-            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Temporary.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Bolt.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
