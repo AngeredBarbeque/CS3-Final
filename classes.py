@@ -163,7 +163,7 @@ class Projectile(ABC,sprite.Sprite):
         pass
 
 class Bee(Projectile):
-    def __init__(self, speed=1, damage=15, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Bee.png"), target=(0, 0),type="Bee"):
+    def __init__(self, speed=1, damage=5, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Bee.png"), target=(0, 0),type="Bee"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
     def on_hit(self,enemy):
@@ -183,7 +183,7 @@ class Bee(Projectile):
             return (self.rect.x,self.rect.y)
         
 class Bolt(Projectile):
-    def __init__(self, speed=1, damage=15, pos=(0,0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=(0, 0),type="Bolt"):
+    def __init__(self, speed=1, damage=10, pos=(0,0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=(0, 0),type="Bolt"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
     def on_hit(self,enemy):
@@ -199,7 +199,7 @@ class Bolt(Projectile):
                         if new_y >=0 and new_y <= 1200:
                             break
                     break
-            Bee(30,15,(new_x,new_y))
+            projectiles.add(Bee(30,15,(new_x,new_y)))
         self.kill()
     
 class Honey(Projectile):
@@ -247,14 +247,15 @@ class Beellista(Tower):
         self.flipped = False
     def fire(self):
         target = super()._find_target()
-        #Make the flip thing
-        if target.rect.x < self.rect.x and self.flipped == False:
-            self.image = pygame.transform.flip(self.image,True,False)
-        elif target.rect.x > self.rect.x and self.flipped:
-            self.image = pygame.transform.flip(self.image,True,False)
         if target:
+            if target.rect.x < self.rect.x and not self.flipped:
+                self.image = pygame.transform.flip(self.image,True,False)
+                self.flipped = True
+            elif target.rect.x > self.rect.x and self.flipped:
+                self.image = pygame.transform.flip(self.image,True,False)
+                self.flipped = False
             #Use enemies self.x_move and self.y_move to add/subtract from the target location.
-            shot = Bolt(3,15,self.pos,1,pygame.image.load("Resources//Bolt.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+            shot = Bolt(3,10,self.pos,1,pygame.image.load("Resources//Bolt.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
@@ -266,7 +267,7 @@ class Beehive(Tower):
     def fire(self):
         target = super()._find_target()
         if target:
-            shot = Bee(3,15,(self.rect.x +32,self.rect.y +32),1,pygame.image.load("Resources//Bee.png"),target)
+            shot = Bee(3,5,(self.rect.x +32,self.rect.y +32),1,pygame.image.load("Resources//Bee.png"),target)
             projectiles.add(shot)
             self.last_shot = time.time()
             return
@@ -278,7 +279,7 @@ class Honeycannon(Tower):
     def fire(self):
         target = super()._find_target()
         if target:
-            shot = Honey(3,15,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+            shot = Honey(3,0,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
             projectiles.add(shot)
             self.last_shot = time.time()
             return
