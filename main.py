@@ -10,6 +10,9 @@ background = pygame.image.load("Resources\\background.jpg")
 selectedtext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",14)
 wavetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 honeytext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
+lifetext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",32)
+flavortext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",30)
+basictext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
@@ -21,16 +24,14 @@ honey_icon = pygame.transform.scale(honey_icon,(int(honey_icon.get_width()*1.5),
 honey_rect = pygame.rect.Rect(1370,520,honey_icon.get_width(),honey_icon.get_height())
 lives_icon = pygame.image.load("Resources\\lives.png")
 lives_icon = pygame.transform.scale(lives_icon,(lives_icon.get_width()*2,lives_icon.get_height()*2))
-lives_rect = pygame.rect.Rect(0,0,lives_icon.get_width(),lives_icon.get_height())
+lives_rect = pygame.rect.Rect(1250,10,lives_icon.get_width(),lives_icon.get_height())
 tree_rect = pygame.rect.Rect(40,824,68,96)
 sign_rect = pygame.rect.Rect(880,1075,206,133)
 
 beellista_icon = Button((1267,365),"Resources/Beellista.png",1)
 beehive_icon = Button((1387,365),"Resources//Hive.png",1)
 honeycannon_icon = Button((1507,365),"Resources/Honeycannon.png",1)
-start = Button((0,0),"Resources//start.png",2)
-
-flavortext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",30)
+start = Button((1287,1000),"Resources//start.png",5)
 
 #Defines collision rectangles for the track segments
 track_1 = pygame.Rect(0,285,740,130)
@@ -57,15 +58,43 @@ wave = 0
 honey_supply = 10
 running = True
 tutorial = True
-while running:
+start_time = time.time()
+win_text = "Congratulations, comrade!\nFor your bravery and skill,\nyou have been promoted to\nWewart's personal military advisor,\nand you have recieved a $5 gift\ncard for Beemart!"
+death_text = "You have dissapointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade."
+tutorial_text = "You are one of Walmartville's outer\ndefenders. A force of angry Walmart\nemployees is approaching the city.\nOn its own, this is not unusal.\nHowever, there are rumours\nthat something more sinister brews\non the horizon... For this reason,\nthe glorious Wewart has agreed to\nacompany you today. You\nhave a short preperation\nperiod beforce they arrive."
+while running: 
+    since_start = time.time() - start_time
     if honey_supply > 99:
         honey_supply = 99
     flavor_text = ""
     mouse_pos = pygame.mouse.get_pos()
-    if enemies.sprites() == [] and wave <= 11:
+    if enemies.sprites() == [] and wave <= 11 and not tutorial:
         done = False
         wave += 1
     screen.blit(background, (0,0))
+    if tutorial and since_start < 0:
+        tutorial_list = tutorial_text.splitlines()
+        lines = 0
+        for i in tutorial_list:
+            lines += 1
+            tutorial_display = basictext.render(i,True,(255,255,255))
+            screen.blit(tutorial_display,(150,180 +(lines * 64)))
+    if lives <= 0:
+        death_list = death_text.splitlines()
+        lines = 0
+        for i in death_list:
+            lines += 1
+            death_display = basictext.render(i,True,(255,255,255))
+            screen.blit(death_display,(150,180 +(lines * 64)))
+        start.x = 600
+        start.y = 600
+    if wave == 15:
+        win_list = win_text.splitlines()
+        lines = 0
+        for i in win_list:
+            lines += 1
+            win_display = basictext.render(i,True,(255,255,255))
+            screen.blit(win_display,(150,180 +(lines * 64)))
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
@@ -91,7 +120,7 @@ while running:
                 elif selected == "Honeycannon" and not on_track and honey_supply >= honeycannon_cost:
                     towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1.5,1.5,300))
                     honey_supply -= honeycannon_cost
-    if not tutorial:
+    if not tutorial and lives > 0:
         if wave <= 5 and not done:
             if to_spawn == 0:
                 to_spawn = wave*5
@@ -114,7 +143,7 @@ while running:
                 last_spawn = time.time()
             if to_spawn == 0:
                 done = True
-        elif not done:
+        elif wave == 15 and not done:
             if to_spawn == 0:
                 to_spawn = (wave-5)*5
             #If the last spawn was a least a second ago, spawn another
@@ -125,25 +154,44 @@ while running:
                 last_spawn = time.time()
             if to_spawn == 0:
                 done = True
-
-    for i in enemies:
-        i.update(waypoints[i.next_waypoint_idx])
-        if i.at_waypoint(waypoints[i.next_waypoint_idx],2):
-            if i.next_waypoint_idx > len(waypoints) - 1:
+    if lives > 0:
+        for i in enemies:
+            i.update(waypoints[i.next_waypoint_idx])
+            if i.at_waypoint(waypoints[i.next_waypoint_idx],2):
+                if i.next_waypoint_idx > len(waypoints) - 1:
+                    i.kill()
+                    if i.img == pygame.image.load("Resources\\walmart.png"):
+                        lives -= 1
+                    elif i.img == pygame.image.load("Resources\\noigelist.png"):
+                        lives -= 2
+                    else:
+                        lives = 0
+            if i.health <= 0:
                 i.kill()
-                lives -= 1
-        if i.health <= 0:
-            i.kill()
-            honey_supply += 1
-    for i in towers:
-        if  time.time() - i.last_shot > i.fire_rate:
-            i.fire()
-    for i in projectiles:
-        if i.type == "Bee":
-            i.target = i.find_target(waypoints)
-        i.move(i.target)
-        i.has_hit()
-    
+                honey_supply += 1
+        for i in towers:
+            if  time.time() - i.last_shot > i.fire_rate:
+                i.fire()
+        for i in projectiles:
+            if i.type == "Bee":
+                i.target = i.find_target(waypoints)
+            i.move(i.target)
+            i.has_hit()
+    if lives <= 0:
+        if start.draw():
+            enemies.empty()
+            projectiles.empty()
+            towers.empty()
+            lives = 20
+            wave = 0
+            honey_supply = 10
+            to_spawn = 0
+            last_spawn = 0
+            start_time = time.time()
+    elif tutorial:
+        if start.draw():
+            tutorial = False
+
     #Ensures that the button wasn't pressed too recently.
     if time.time() - beellista_icon.start_time > 0.25:
         if beellista_icon.draw(): 
@@ -164,27 +212,31 @@ while running:
             else:
                 selected = "Honeycannon"
 
-    if selected == "":
-        mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
-        if pygame.Rect.colliderect(mouse_rect,beellista_icon):
-            flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a small\namount of bees.\nCost: 3 Honey."
-        elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
-            flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 1 Honey."
-        elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
-            flavor_text = "The Honeycannon\nThe honeycannon is a marvel\nof engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 2 Honey."
-        elif pygame.Rect.colliderect(mouse_rect,wewart_rect):
-            flavor_text = "Get out of my face!"
-        elif pygame.Rect.colliderect(mouse_rect,honey_rect):
-            flavor_text = "That's your honey.\nYou can use your honey to\npurchase defenses."
-        elif pygame.Rect.colliderect(mouse_rect,tree_rect):
-            flavor_text = "That's my favorite tree.\nDon't mess with it."
-        elif pygame.Rect.colliderect(mouse_rect,sign_rect):
-            flavor_text = "That's the entrance to \nWalmartville. It's\nthe most wonderful\nplace to live on earth.\nProtect it with your life."
-        elif pygame.Rect.colliderect(mouse_rect,lives_rect):
-            flavor_text = "That's your life count.\nIf you let too many enemies through,\nyou'll be punished."
+    if selected == "" and lives > 0:
+        if wave != 15:
+            mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
+            if pygame.Rect.colliderect(mouse_rect,beellista_icon):
+                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a small\namount of bees.\nCost: 3 Honey."
+            elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
+                flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 1 Honey."
+            elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
+                flavor_text = "The Honeycannon\nThe honeycannon is a marvel\nof engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 2 Honey."
+            elif pygame.Rect.colliderect(mouse_rect,wewart_rect):
+                flavor_text = "Get out of my face!"
+            elif pygame.Rect.colliderect(mouse_rect,honey_rect):
+                flavor_text = "That's your honey.\nYou can use your honey to\npurchase defenses."
+            elif pygame.Rect.colliderect(mouse_rect,tree_rect):
+                flavor_text = "That's my favorite tree.\nDon't mess with it."
+            elif pygame.Rect.colliderect(mouse_rect,sign_rect):
+                flavor_text = "That's the entrance to \nWalmartville. It's\nthe most wonderful\nplace to live on earth.\nProtect it with your life."
+            elif pygame.Rect.colliderect(mouse_rect,lives_rect):
+                flavor_text = "That's your life count.\nIf you let too many enemies\nthrough, you'll be punished."
+        else:
+            flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
     selected_display = selectedtext.render(selected,True,(0,0,0))
     honey_display = honeytext.render(f"{honey_supply}",True,(0,0,0))
+    lives_display = lifetext.render(f"{lives}",True,(0,0,0))
     enemies.draw(screen)
     towers.draw(screen)
     projectiles.draw(screen)
@@ -193,9 +245,13 @@ while running:
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
     screen.blit(beehive_icon.img, (beehive_icon.x, beehive_icon.y))
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
+    if tutorial or lives <= 0:
+        screen.blit(start.img, (start.x, start.y))
     screen.blit(wewart,(1330,50))
     screen.blit(honey_display,(1385,600))
     screen.blit(honey_icon,(1370,520))
+    screen.blit(lives_icon,(1250,10))
+    screen.blit(lives_display,(1300,22))
     
     flavor_list = flavor_text.splitlines()
     lines = 0
