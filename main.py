@@ -46,9 +46,9 @@ track_8 = pygame.Rect(930,860,110,340)
 #Creates a list of said collision rectangles
 track_collision = [track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8]
 
-beellista_cost = 3
-honeycannon_cost = 2
-beehive_cost = 1
+beellista_cost = 7
+honeycannon_cost = 5
+beehive_cost = 3
 to_spawn = 0
 last_spawn = 0
 flavor_text = ""
@@ -172,7 +172,7 @@ while running:
                 if i.next_waypoint_idx > len(waypoints) - 1:
                     i.kill()
                     if i.type == "Walmart":
-                        lives -= 4
+                        lives -= 1
                     elif i.type == "Fish":
                         lives -= 2
                     elif i.type == "Intezarr":
