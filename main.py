@@ -61,7 +61,7 @@ tutorial = True
 start_time = time.time()
 win_text = "Congratulations, comrade!\nFor your bravery and skill,\nyou have been promoted to\nWewart's personal military advisor,\nand you have recieved a $5 gift\ncard for Beemart!"
 death_text = "You have disappointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade."
-tutorial_text = "You are one of Walmartville's outer\ndefenders. A force of angry Walmart\nemployees is approaching the city.\nOn its own, this is not unusal.\nHowever, there are rumours\nthat something more sinister brews\non the horizon... For this reason,\nthe glorious Wewart has agreed to\nacompany you today. You\nhave a short preperation\nperiod beforce they arrive."
+tutorial_text = "You are one of Walmartville's outer\ndefenders. A force of angry Walmart\nemployees is approaching the city.\nOn its own, this is not unusal.\nHowever, there are rumours\nthat something more sinister brews\non the horizon... For this reason,\nthe Glorious Wewart has agreed to\nacompany you today. You\nhave a short preperation\nperiod beforce they arrive."
 pygame.mixer.music.load("Resources\\main_theme.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.3)
@@ -76,7 +76,7 @@ while running:
         done = False
         wave += 1
     screen.blit(background, (0,0))
-    if tutorial and since_start < 10:
+    if tutorial and since_start < 17:
         tutorial_list = tutorial_text.splitlines()
         lines = 0
         for i in tutorial_list:
@@ -99,7 +99,7 @@ while running:
             pygame.mixer.music.load("Resources\\intezarr.mp3")
             pygame.mixer.music.play(-1)
             end_music = True
-    if wave == 15:
+    if wave == 11:
         win_list = win_text.splitlines()
         lines = 0
         for i in win_list:
@@ -154,7 +154,7 @@ while running:
                 last_spawn = time.time()
             if to_spawn == 0:
                 done = True
-        elif wave == 15 and not done:
+        elif wave == 11 and not done:
             if to_spawn == 0:
                 to_spawn = (wave-5)*5
             #If the last spawn was a least a second ago, spawn another
@@ -227,14 +227,14 @@ while running:
                 selected = "Honeycannon"
 
     if selected == "" and lives > 0:
-        if wave != 15:
+        if wave != 11:
             mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
             if pygame.Rect.colliderect(mouse_rect,beellista_icon):
-                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a\nsmall amount of bees.\nCost: 3 Honey."
+                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a\nsmall amount of bees.\nCost: 7 Honey."
             elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
-                flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 1 Honey."
+                flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 3 Honey."
             elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
-                flavor_text = "The Honeycannon\nThe honeycannon is a\nmarvel of engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 2 Honey."
+                flavor_text = "The Honeycannon\nThe honeycannon is a\nmarvel of engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 5 Honey."
             elif pygame.Rect.colliderect(mouse_rect,wewart_rect):
                 flavor_text = "Get out of my face!"
             elif pygame.Rect.colliderect(mouse_rect,honey_rect):
@@ -245,6 +245,10 @@ while running:
                 flavor_text = "That's the entrance to \nWalmartville. It's\nthe most wonderful\nplace to live on earth.\nProtect it with your life."
             elif pygame.Rect.colliderect(mouse_rect,lives_rect):
                 flavor_text = "That's your life count.\nIf you let too many enemies\nthrough, you'll be punished."
+            elif tutorial:
+                flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin."
+            else:
+                flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)"
         else:
             flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
