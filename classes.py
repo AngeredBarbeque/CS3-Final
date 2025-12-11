@@ -47,7 +47,7 @@ class Enemy(sprite.Sprite):
     health:int
     speed:float
     scale:float 
-    def __init__(self, pos=(0,0), health=100, speed=1, scale=1, img=pygame.image.load("Resources/Temporary.png")):
+    def __init__(self, pos=(0,0), health=100, speed=1, scale=1, img=pygame.image.load("Resources/Temporary.png"),type="None"):
         pygame.sprite.Sprite.__init__(self)
         self.next_waypoint_idx = 0
         self.health = health
@@ -59,6 +59,7 @@ class Enemy(sprite.Sprite):
         self.rect.y = pos[1]
         self.x_move = 0
         self.y_move = 0
+        self.type = type
         
     def update(self,target):
         #Finds the difference between position of self, and position of target

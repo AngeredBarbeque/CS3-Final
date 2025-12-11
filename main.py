@@ -60,19 +60,23 @@ running = True
 tutorial = True
 start_time = time.time()
 win_text = "Congratulations, comrade!\nFor your bravery and skill,\nyou have been promoted to\nWewart's personal military advisor,\nand you have recieved a $5 gift\ncard for Beemart!"
-death_text = "You have dissapointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade."
+death_text = "You have disappointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade."
 tutorial_text = "You are one of Walmartville's outer\ndefenders. A force of angry Walmart\nemployees is approaching the city.\nOn its own, this is not unusal.\nHowever, there are rumours\nthat something more sinister brews\non the horizon... For this reason,\nthe glorious Wewart has agreed to\nacompany you today. You\nhave a short preperation\nperiod beforce they arrive."
+pygame.mixer.music.load("Resources\\main_theme.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.3)
+end_music = False
 while running: 
     since_start = time.time() - start_time
     if honey_supply > 99:
         honey_supply = 99
     flavor_text = ""
     mouse_pos = pygame.mouse.get_pos()
-    if enemies.sprites() == [] and wave <= 11 and not tutorial:
+    if enemies.sprites() == [] and wave <= 11 and not tutorial and lives > 0:
         done = False
         wave += 1
     screen.blit(background, (0,0))
-    if tutorial and since_start < 0:
+    if tutorial and since_start < 10:
         tutorial_list = tutorial_text.splitlines()
         lines = 0
         for i in tutorial_list:
@@ -88,6 +92,13 @@ while running:
             screen.blit(death_display,(150,180 +(lines * 64)))
         start.x = 600
         start.y = 600
+        start.rect.x = 600
+        start.rect.y = 600
+        if not end_music:
+            pygame.mixer.music.fadeout(2000)
+            pygame.mixer.music.load("Resources\\intezarr.mp3")
+            pygame.mixer.music.play(-1)
+            end_music = True
     if wave == 15:
         win_list = win_text.splitlines()
         lines = 0
@@ -127,7 +138,7 @@ while running:
             #If the last spawn was a least a second ago, spawn another
             present = time.time()
             if last_spawn - present < -1 and to_spawn > 0:
-                enemies.add(Enemy((0,325),100,1,1,pygame.image.load("Resources\\walmart.png")))
+                enemies.add(Enemy((0,325),100,1,1,pygame.image.load("Resources\\walmart.png"),"Walmart"))
                 to_spawn -= 1
                 last_spawn = time.time()
             if to_spawn == 0:
@@ -138,7 +149,7 @@ while running:
             #If the last spawn was a least a second ago, spawn another
             present = time.time()
             if last_spawn - present < -1 and to_spawn > 0:
-                enemies.add(Enemy((0,325),300,2,0.04,pygame.image.load("Resources\\noigelist.png")))
+                enemies.add(Enemy((0,325),300,2,0.04,pygame.image.load("Resources\\noigelist.png"),"Fish"))
                 to_spawn -= 1
                 last_spawn = time.time()
             if to_spawn == 0:
@@ -149,7 +160,7 @@ while running:
             #If the last spawn was a least a second ago, spawn another
             present = time.time()
             if last_spawn - present < -1 and to_spawn > 0:
-                enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png")))
+                enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png"),"Intezarr"))
                 to_spawn -= 1
                 last_spawn = time.time()
             if to_spawn == 0:
@@ -160,11 +171,11 @@ while running:
             if i.at_waypoint(waypoints[i.next_waypoint_idx],2):
                 if i.next_waypoint_idx > len(waypoints) - 1:
                     i.kill()
-                    if i.img == pygame.image.load("Resources\\walmart.png"):
-                        lives -= 1
-                    elif i.img == pygame.image.load("Resources\\noigelist.png"):
+                    if i.type == "Walmart":
+                        lives -= 4
+                    elif i.type == "Fish":
                         lives -= 2
-                    else:
+                    elif i.type == "Intezarr":
                         lives = 0
             if i.health <= 0:
                 i.kill()
@@ -188,6 +199,9 @@ while running:
             to_spawn = 0
             last_spawn = 0
             start_time = time.time()
+            pygame.mixer.music.fadeout(2000)
+            pygame.mixer.music.load("Resources\\main_theme.mp3")
+            pygame.mixer.music.play(-1)
     elif tutorial:
         if start.draw():
             tutorial = False
@@ -216,11 +230,11 @@ while running:
         if wave != 15:
             mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
             if pygame.Rect.colliderect(mouse_rect,beellista_icon):
-                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a small\namount of bees.\nCost: 3 Honey."
+                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a\nsmall amount of bees.\nCost: 3 Honey."
             elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
                 flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 1 Honey."
             elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
-                flavor_text = "The Honeycannon\nThe honeycannon is a marvel\nof engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 2 Honey."
+                flavor_text = "The Honeycannon\nThe honeycannon is a\nmarvel of engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 2 Honey."
             elif pygame.Rect.colliderect(mouse_rect,wewart_rect):
                 flavor_text = "Get out of my face!"
             elif pygame.Rect.colliderect(mouse_rect,honey_rect):
@@ -245,7 +259,7 @@ while running:
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
     screen.blit(beehive_icon.img, (beehive_icon.x, beehive_icon.y))
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
-    if tutorial or lives <= 0:
+    if tutorial or end_music:
         screen.blit(start.img, (start.x, start.y))
     screen.blit(wewart,(1330,50))
     screen.blit(honey_display,(1385,600))
