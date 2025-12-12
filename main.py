@@ -78,36 +78,6 @@ while running:
         done = False
         wave += 1
     screen.blit(background, (0,0))
-    if tutorial and since_start < 17:
-        tutorial_list = tutorial_text.splitlines()
-        lines = 0
-        for i in tutorial_list:
-            lines += 1
-            tutorial_display = basictext.render(i,True,(255,255,255))
-            screen.blit(tutorial_display,(150,180 +(lines * 64)))
-    if lives <= 0:
-        death_list = death_text.splitlines()
-        lines = 0
-        for i in death_list:
-            lines += 1
-            death_display = basictext.render(i,True,(255,255,255))
-            screen.blit(death_display,(150,180 +(lines * 64)))
-        start.x = 600
-        start.y = 600
-        start.rect.x = 600
-        start.rect.y = 600
-        if not end_music:
-            pygame.mixer.music.fadeout(2000)
-            pygame.mixer.music.load("Resources\\intezarr.mp3")
-            pygame.mixer.music.play(-1)
-            end_music = True
-    if wave == 11:
-        win_list = win_text.splitlines()
-        lines = 0
-        for i in win_list:
-            lines += 1
-            win_display = basictext.render(i,True,(255,255,255))
-            screen.blit(win_display,(150,180 +(lines * 64)))
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
@@ -131,7 +101,7 @@ while running:
                     towers.add(Beehive((mouse_pos[0]-32,mouse_pos[1]-32),1,0.5,200))
                     honey_supply -= beehive_cost
                 elif selected == "Honeycannon" and not on_track and honey_supply >= honeycannon_cost:
-                    towers.add(Honeycannon((mouse_pos[0]-32,mouse_pos[1]-32),1.5,1.5,300))
+                    towers.add(Honeycannon((mouse_pos[0]-48,mouse_pos[1]-48),1.5,1.5,300))
                     honey_supply -= honeycannon_cost
     if not tutorial and lives > 0:
         if wave <= 5 and not done:
@@ -157,14 +127,11 @@ while running:
             if to_spawn == 0:
                 done = True
         elif wave == 11 and not done:
-            if to_spawn == 0:
-                to_spawn = (wave-5)*5
+            to_spawn = 1
             #If the last spawn was a least a second ago, spawn another
-            present = time.time()
-            if last_spawn - present < -1 and to_spawn > 0:
+            if to_spawn > 0:
                 enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png"),"Intezarr"))
                 to_spawn -= 1
-                last_spawn = time.time()
             if to_spawn == 0:
                 done = True
     if lives > 0:
@@ -251,8 +218,12 @@ while running:
                 flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin."
             else:
                 flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)"
-        else:
-            flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
+    elif wave == 11 and lives > 0:
+        flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
+    elif tutorial and lives > 0:
+        flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin."
+    elif lives > 0:
+        flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)"
     wave_display = wavetext.render(f"Wave: {wave}",True,(255,255,255))
     selected_display = selectedtext.render(selected,True,(0,0,0))
     honey_display = honeytext.render(f"{honey_supply}",True,(0,0,0))
@@ -260,6 +231,36 @@ while running:
     enemies.draw(screen)
     towers.draw(screen)
     projectiles.draw(screen)
+    if tutorial and since_start < 17:
+        tutorial_list = tutorial_text.splitlines()
+        lines = 0
+        for i in tutorial_list:
+            lines += 1
+            tutorial_display = basictext.render(i,True,(255,255,255))
+            screen.blit(tutorial_display,(150,180 +(lines * 64)))
+    if lives <= 0:
+        death_list = death_text.splitlines()
+        lines = 0
+        for i in death_list:
+            lines += 1
+            death_display = basictext.render(i,True,(255,255,255))
+            screen.blit(death_display,(150,180 +(lines * 64)))
+        start.x = 600
+        start.y = 600
+        start.rect.x = 600
+        start.rect.y = 600
+        if not end_music:
+            pygame.mixer.music.fadeout(2000)
+            pygame.mixer.music.load("Resources\\intezarr.mp3")
+            pygame.mixer.music.play(-1)
+            end_music = True
+    if wave > 11:
+        win_list = win_text.splitlines()
+        lines = 0
+        for i in win_list:
+            lines += 1
+            win_display = basictext.render(i,True,(255,255,255))
+            screen.blit(win_display,(150,180 +(lines * 64)))
     screen.blit(pygame.image.load("Resources\\sign.png"),(880,1075))
     screen.blit(wave_display, (1300,1100))
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
@@ -275,7 +276,7 @@ while running:
         screen.blit(wewart_talk,(1330,50))
         talking = True
         last_swap = time.time()
-    elif flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." or flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" or flavor_text == "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
+    elif flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." or flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" or flavor_text == "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!" or flavor_text == "":
         screen.blit(wewart,(1330,50))
     elif not talking:
         screen.blit(wewart,(1330,50))
