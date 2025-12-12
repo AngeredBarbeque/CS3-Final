@@ -18,6 +18,10 @@ waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,89
 
 wewart = pygame.image.load("Resources\\closed_wewart.png")
 wewart_talk = pygame.image.load("Resources\\open_wewart.png")
+wewart = pygame.transform.flip(wewart,True,False)
+wewart_talk = pygame.transform.flip(wewart_talk,True,False)
+wewart = pygame.transform.scale(wewart,(int(wewart.get_width() * 1.3),int(wewart.get_height() * 1.3)))
+wewart_talk = pygame.transform.scale(wewart_talk,(int(wewart_talk.get_width() * 1.3),int(wewart_talk.get_height() * 1.3)))
 wewart_rect = pygame.rect.Rect(1330,50,wewart.get_width(),wewart.get_height())
 honey_icon = pygame.image.load("Resources\\Honey.png")
 honey_icon = pygame.transform.scale(honey_icon,(int(honey_icon.get_width()*1.5),int(honey_icon.get_height()*1.5)))
@@ -199,11 +203,11 @@ while running:
         if wave != 11:
             mouse_rect = pygame.Rect(mouse_pos[0],mouse_pos[1],5,5)
             if pygame.Rect.colliderect(mouse_rect,beellista_icon):
-                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a\nsmall amount of bees.\nCost: 7 Honey."
+                flavor_text = "The Beellista\nThe beellista is my personal\nfavorite machine of war. It\nlaunches a deadly bolt,\nwhich then splits into a\nsmall amount of bees.\nCost: 6 Honey."
             elif pygame.Rect.colliderect(mouse_rect,beehive_icon):
-                flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 3 Honey."
+                flavor_text = "The Beehive\nThe humble beehive releases\na consistent amount of bees\nto swarm your enemies.\nCost: 2 Honey."
             elif pygame.Rect.colliderect(mouse_rect,honeycannon_icon):
-                flavor_text = "The Honeycannon\nThe honeycannon is a\nmarvel of engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 5 Honey."
+                flavor_text = "The Honeycannon\nThe honeycannon is a\nmarvel of engineering. After\nsplattering an opponent with\nenough honey, you will\nbreak their spirits and they\nwill be unable to continue.\nCost: 3 Honey."
             elif pygame.Rect.colliderect(mouse_rect,wewart_rect):
                 flavor_text = "Get out of my face!"
             elif pygame.Rect.colliderect(mouse_rect,honey_rect):
@@ -269,19 +273,19 @@ while running:
     if tutorial or end_music:
         screen.blit(start.img, (start.x, start.y))
     if talking and time.time() - last_swap > 0.1 and flavor_text !="Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." and flavor_text != "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" and flavor_text != "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
-        screen.blit(wewart,(1330,50))
+        screen.blit(wewart,(1300,20))
         talking = False
         last_swap = time.time()
     elif not talking and time.time() - last_swap > 0.1 and flavor_text !="Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." and flavor_text != "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" and flavor_text != "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
-        screen.blit(wewart_talk,(1330,50))
+        screen.blit(wewart_talk,(1300,20))
         talking = True
         last_swap = time.time()
     elif flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." or flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" or flavor_text == "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!" or flavor_text == "":
-        screen.blit(wewart,(1330,50))
+        screen.blit(wewart,(1300,20))
     elif not talking:
-        screen.blit(wewart,(1330,50))
+        screen.blit(wewart,(1300,20))
     elif talking:
-        screen.blit(wewart_talk,(1330,50))
+        screen.blit(wewart_talk,(1300,20))
     screen.blit(honey_display,(1385,600))
     screen.blit(honey_icon,(1370,520))
     screen.blit(lives_icon,(1250,10))
