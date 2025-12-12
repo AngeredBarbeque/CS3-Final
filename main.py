@@ -16,8 +16,8 @@ basictext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
-wewart = pygame.image.load("Resources\\Temporary.png")
-wewart = pygame.transform.scale(wewart,(wewart.get_width()*3,wewart.get_height()*3))
+wewart = pygame.image.load("Resources\\closed_wewart.png")
+wewart_talk = pygame.image.load("Resources\\open_wewart.png")
 wewart_rect = pygame.rect.Rect(1330,50,wewart.get_width(),wewart.get_height())
 honey_icon = pygame.image.load("Resources\\Honey.png")
 honey_icon = pygame.transform.scale(honey_icon,(int(honey_icon.get_width()*1.5),int(honey_icon.get_height()*1.5)))
@@ -51,6 +51,7 @@ honeycannon_cost = 3
 beehive_cost = 2
 to_spawn = 0
 last_spawn = 0
+last_swap = 0
 flavor_text = ""
 selected = ""
 lives = 20
@@ -66,6 +67,7 @@ pygame.mixer.music.load("Resources\\main_theme.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.3)
 end_music = False
+talking = False
 while running: 
     since_start = time.time() - start_time
     if honey_supply > 99:
@@ -265,7 +267,20 @@ while running:
     screen.blit(honeycannon_icon.img, (honeycannon_icon.x, honeycannon_icon.y))
     if tutorial or end_music:
         screen.blit(start.img, (start.x, start.y))
-    screen.blit(wewart,(1330,50))
+    if talking and time.time() - last_swap > 0.1 and flavor_text !="Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." and flavor_text != "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" and flavor_text != "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
+        screen.blit(wewart,(1330,50))
+        talking = False
+        last_swap = time.time()
+    elif not talking and time.time() - last_swap > 0.1 and flavor_text !="Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." and flavor_text != "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" and flavor_text != "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
+        screen.blit(wewart_talk,(1330,50))
+        talking = True
+        last_swap = time.time()
+    elif flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin." or flavor_text == "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)" or flavor_text == "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!":
+        screen.blit(wewart,(1330,50))
+    elif not talking:
+        screen.blit(wewart,(1330,50))
+    elif talking:
+        screen.blit(wewart_talk,(1330,50))
     screen.blit(honey_display,(1385,600))
     screen.blit(honey_icon,(1370,520))
     screen.blit(lives_icon,(1250,10))
