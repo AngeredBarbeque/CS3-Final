@@ -268,11 +268,10 @@ class Beehive(Tower):
     def fire(self):
         target = super()._find_target()
         if target:
-            if target.type != "Intezarr":
-                shot = Bee(3,5,(self.rect.x +32,self.rect.y +32),1,pygame.image.load("Resources//Bee.png"),target)
-                projectiles.add(shot)
-                self.last_shot = time.time()
-                return
+            shot = Bee(3,5,(self.rect.x +32,self.rect.y +32),1,pygame.image.load("Resources//Bee.png"),target)
+            projectiles.add(shot)
+            self.last_shot = time.time()
+            return
     
 class Honeycannon(Tower):
     def __init__(self, pos=(0,0), scale=1.5, fire_rate=2, range=500, img=pygame.image.load("Resources//Honeycannon.png")):
@@ -281,8 +280,9 @@ class Honeycannon(Tower):
     def fire(self):
         target = super()._find_target()
         if target:
-            shot = Honey(3,0,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
-            projectiles.add(shot)
-            self.last_shot = time.time()
-            return
+            if target.type != "Intezarr":
+                shot = Honey(3,0,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+                projectiles.add(shot)
+                self.last_shot = time.time()
+                return
         
