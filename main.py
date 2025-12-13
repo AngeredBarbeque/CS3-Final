@@ -1,5 +1,15 @@
 from classes import *
 
+def multiline(font,text="Default",color=(0,0,0),x=0,y=0,spacing=64):
+    lines = 0
+    for i in text.splitlines():
+        lines += 1
+        text = font.render(i,True,color)
+        screen.blit(text,(x,y +(lines * spacing)))
+
+
+
+
 pygame.init()
 screen = pygame.display.set_mode((1600, 1200))
 pygame.display.set_caption("The Siege of Walmartville")
@@ -237,19 +247,9 @@ while running:
     towers.draw(screen)
     projectiles.draw(screen)
     if tutorial and since_start < 17:
-        tutorial_list = tutorial_text.splitlines()
-        lines = 0
-        for i in tutorial_list:
-            lines += 1
-            tutorial_display = basictext.render(i,True,(255,255,255))
-            screen.blit(tutorial_display,(150,180 +(lines * 64)))
+        multiline(basictext,tutorial_text,(255,255,255),150,180,64)
     if lives <= 0:
-        death_list = death_text.splitlines()
-        lines = 0
-        for i in death_list:
-            lines += 1
-            death_display = basictext.render(i,True,(255,255,255))
-            screen.blit(death_display,(150,180 +(lines * 64)))
+        multiline(basictext,death_text,(255,255,255),150,180,64)
         start.x = 600
         start.y = 600
         start.rect.x = 600
@@ -260,12 +260,7 @@ while running:
             pygame.mixer.music.play(-1)
             end_music = True
     if wave > 11:
-        win_list = win_text.splitlines()
-        lines = 0
-        for i in win_list:
-            lines += 1
-            win_display = basictext.render(i,True,(255,255,255))
-            screen.blit(win_display,(150,180 +(lines * 64)))
+        multiline(basictext,win_text,(255,255,255),150,180,64)
     screen.blit(pygame.image.load("Resources\\sign.png"),(880,1075))
     screen.blit(wave_display, (1300,1100))
     screen.blit(beellista_icon.img, (beellista_icon.x, beellista_icon.y))
@@ -292,12 +287,7 @@ while running:
     screen.blit(lives_icon,(1250,10))
     screen.blit(lives_display,(1300,22))
     
-    flavor_list = flavor_text.splitlines()
-    lines = 0
-    for i in flavor_list:
-        lines += 1
-        flavor_display = flavortext.render(i,True,(0,0,0))
-        screen.blit(flavor_display,(1250,680 +(lines * 30)))
+    multiline(flavortext,flavor_text,(0,0,0),1250,680,30)
 
     screen.blit(selected_display,(mouse_pos[0]+10,mouse_pos[1]-5))
     pygame.display.flip()
