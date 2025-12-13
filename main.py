@@ -175,6 +175,7 @@ while running:
             pygame.mixer.music.fadeout(2000)
             pygame.mixer.music.load("Resources\\main_theme.mp3")
             pygame.mixer.music.play(-1)
+            end_music = False
     elif tutorial:
         if start.draw():
             tutorial = False
