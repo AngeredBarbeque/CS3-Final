@@ -1,5 +1,6 @@
 from classes import *
 
+# Blits multiple lines
 def multiline(font,text="Default",color=(0,0,0),x=0,y=0,spacing=64):
     lines = 0
     for i in text.splitlines():
@@ -26,6 +27,7 @@ basictext = pygame.font.Font("Resources\\Times New Roman Regular.ttf",64)
 
 waypoints = [(620,325),(620,150),(885,150),(885,610),(375,610),(375,895),(955,895),(955,1190)]
 
+#Defines a bunch of images
 wewart = pygame.image.load("Resources\\closed_wewart.png")
 wewart_talk = pygame.image.load("Resources\\open_wewart.png")
 wewart = pygame.transform.flip(wewart,True,False)
@@ -60,6 +62,7 @@ track_8 = pygame.Rect(930,860,110,340)
 #Creates a list of said collision rectangles
 track_collision = [track_1,track_2,track_3,track_4,track_5,track_6,track_7,track_8]
 
+#Defines basic variables
 beellista_cost = 6
 honeycannon_cost = 3
 beehive_cost = 2
@@ -74,9 +77,10 @@ honey_supply = 10
 running = True
 tutorial = True
 start_time = time.time()
-win_text = "Congratulations, comrade!\nFor your bravery and skill,\nyou have been promoted to\nWewart's personal military advisor,\nand you have recieved a $5 gift\ncard for Beemart!"
-death_text = "You have disappointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade."
+win_text = "Congratulations, comrade!\nFor your bravery and skill,\nyou have been promoted to\nWewart's personal military advisor,\nand you have recieved a $5 gift\ncard for Beemart!\n(Credit to Nyx (Wakefield) Batty\nfor Wewart and\nIntezarr pixel\n art!)"
+death_text = "You have disappointed Wewart, comrade.\nYou will be stripped of your title, and live\nthe remainder of your life in the honey\nmines. Be grateful for Wewart's mercy,\ncomrade.(Credit to Nyx (Wakefield) Batty\nfor Wewart and\nIntezarr pixel\n art!)"
 tutorial_text = "You are one of Walmartville's outer\ndefenders. A force of angry Walmart\nemployees is approaching the city.\nOn its own, this is not unusal.\nHowever, there are rumours\nthat something more sinister brews\non the horizon... For this reason,\nthe Glorious Wewart has agreed to\nacompany you today. You\nhave a short preperation\nperiod beforce they arrive."
+#Starts music
 pygame.mixer.music.load("Resources\\main_theme.mp3")
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.3)

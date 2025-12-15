@@ -89,6 +89,7 @@ class Enemy(sprite.Sprite):
         self.rect.x += self.x_move
         self.rect.y += self.y_move
 
+    #Checks if the enemy is at the waypoint.
     def at_waypoint(self, waypoint,tolerance):
         dist = math.sqrt(((waypoint[0]-self.rect.x)**2) + ((waypoint[1] - self.rect.y)**2))
         if dist <= tolerance:
@@ -149,6 +150,7 @@ class Projectile(ABC,sprite.Sprite):
 
         self.rect.x += x_move
         self.rect.y += y_move
+    #Checks if the projectile has hit an enemy
     def has_hit(self):
         for i in enemies:
             if sprite.collide_rect(self,i):
@@ -167,9 +169,11 @@ class Bee(Projectile):
     def __init__(self, speed=1, damage=5, pos=(0, 0), scale=1, img=pygame.image.load("Resources//Bee.png"), target=(0, 0),type="Bee"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
+    #Defines behavior when aprojectile hits an enemy
     def on_hit(self,enemy):
         enemy.health -= self.damage
         self.kill()
+    #Checks all enemies to see if there are an viable targets
     def find_target(self,waypoints):
         closest_dist = 10000000
         for i in enemies:
@@ -187,6 +191,7 @@ class Bolt(Projectile):
     def __init__(self, speed=1, damage=10, pos=(0,0), scale=1, img=pygame.image.load("Resources//Temporary.png"), target=(0, 0),type="Bolt"):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
+    #The bolts can spawn bees upon hitting an enemy
     def on_hit(self,enemy):
         enemy.health -= self.damage
         #Creates 3 to 7 bees that spawn in a small area around the impact
@@ -208,10 +213,13 @@ class Honey(Projectile):
         super().__init__(speed, damage, pos, scale, img, target)
         self.type = type
         self.speed_low = speed_low
+        #Slows an enemy's speed, when they reach a limit 
     def on_hit(self,target):
-        target.speed -= self.speed_low
-        if target.speed <= 0:
-            target.speed = 0.01
+        #Doesn't work on the boss
+        if target.type != "Intezarr":
+            target.speed -= self.speed_low
+            if target.speed <= 0:
+                target.speed = 0.01
         self.kill()
         
 
@@ -234,6 +242,7 @@ class Tower(ABC,sprite.Sprite):
     @abstractmethod
     def fire():
         pass
+    #Looks for a target within range
     def _find_target(self):
         for i in enemies:
             if math.sqrt(((i.rect.x-self.rect.x)**2) + ((i.rect.y - self.rect.y)**2)) <= self.range:
@@ -246,6 +255,7 @@ class Beellista(Tower):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
         self.flipped = False
+    #Shoots a bolt at the enemy
     def fire(self):
         target = super()._find_target()
         if target:
@@ -265,6 +275,7 @@ class Beehive(Tower):
     def __init__(self, pos=(0, 0), scale=1, fire_rate=2, range=5, img=pygame.image.load("Resources//Hive.png")):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
+    #Spawns a bee
     def fire(self):
         target = super()._find_target()
         if target:
@@ -277,6 +288,7 @@ class Honeycannon(Tower):
     def __init__(self, pos=(0,0), scale=1.5, fire_rate=2, range=500, img=pygame.image.load("Resources//Honeycannon.png")):
         super().__init__(pos, scale, fire_rate, range, img)
         self.last_shot = 0
+    #Shoots a honey glob
     def fire(self):
         target = super()._find_target()
         if target:
