@@ -142,7 +142,7 @@ while running:
             #If the last spawn was a least a second ago, spawn another
             present = time.time()
             if last_spawn - present < -1 and to_spawn > 0:
-                enemies.add(Enemy((0,325),300,2,0.04,pygame.image.load("Resources\\noigelist.png"),"Fish"))
+                enemies.add(Enemy((0,325),250,2,0.04,pygame.image.load("Resources\\noigelist.png"),"Fish"))
                 to_spawn -= 1
                 last_spawn = time.time()
             if to_spawn == 0:
@@ -151,7 +151,7 @@ while running:
             to_spawn = 1
             #If the last spawn was a least a second ago, spawn another
             if to_spawn > 0:
-                enemies.add(Enemy((0,325),5000,1,1,pygame.image.load("Resources\\Intezarr.png"),"Intezarr"))
+                enemies.add(Enemy((0,325),3000,1,1,pygame.image.load("Resources\\Intezarr.png"),"Intezarr"))
                 to_spawn -= 1
             if to_spawn == 0:
                 done = True

@@ -293,7 +293,7 @@ class Honeycannon(Tower):
         target = super()._find_target()
         if target:
             if target.type != "Intezarr":
-                shot = Honey(3,0,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
+                shot = Honey(3,1,(self.pos[0],self.pos[1]-32),1.5,pygame.image.load("Resources//glob.png"),(target.rect.x + (target.x_move * (100*target.speed)), target.rect.y + (target.y_move * (100*target.speed))))
                 projectiles.add(shot)
                 self.last_shot = time.time()
                 return
