@@ -205,7 +205,7 @@ class Bolt(Projectile):
                         if new_y >=0 and new_y <= 1200:
                             break
                     break
-            projectiles.add(Bee(30,15,(new_x,new_y)))
+            projectiles.add(Bee(3,3,(new_x,new_y)))
         self.kill()
     
 class Honey(Projectile):
@@ -219,7 +219,7 @@ class Honey(Projectile):
         if target.type != "Intezarr":
             target.speed -= self.speed_low
             if target.speed <= 0:
-                target.speed = 0.01
+                target.speed = 0
         self.kill()
         
 
