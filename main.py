@@ -94,7 +94,7 @@ while running:
         honey_supply = 99
     flavor_text = ""
     mouse_pos = pygame.mouse.get_pos()
-    if enemies.sprites() == [] and wave < 11 and not tutorial and lives > 0 or time.time() - since_wave > 30 and not tutorial:
+    if enemies.sprites() == [] and wave < 11 and not tutorial and lives > 30 or time.time() - since_wave > 1 and not tutorial and wave != 11:
         done = False
         wave += 1
         since_wave = time.time()
@@ -240,8 +240,8 @@ while running:
                 flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin."
             else:
                 flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)"
-    elif wave == 11 and lives > 0:
-        flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
+        else:
+            flavor_text = "Intezarr!?\nStand your ground, comrade.\nThe stakes are higher than we thought!"
     elif tutorial and lives > 0:
         flavor_text = "Hover your mouse over\nsomething without a tower\nselected, and I'll tell you\nabout it!\n(Click a tower icon again to\nunselect it.)\nPress the Start button to\nbegin."
     elif lives > 0:
